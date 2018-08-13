@@ -6,6 +6,7 @@ room_speed = 60;
 instance_create_depth(x, y, 1000, control);
 
 can_move = 0;
+image_speed = 0;
 
 //Movement
 xSpd = 0;
@@ -32,20 +33,21 @@ move_snd = 0;
 tractor_beam = 0;
 beam = 0;
 beam_acc = 0;
-c_pickup = make_color_rgb(136, 239, 21);
-c_drop = make_color_rgb(255, 44, 44);
 flash = 0;
-flash_col = c_pickup;
+flash_col = 0;
 
 //Inv
-globalvar inv_total, inv_max, inv, inv_spr;
-inv_total = 0;
-inv_max = 5;
-inv = 0;
-inv_spr = 0;
-for(i = 0; i <= inv_max; i++) {
-	inv[i] = "";
-	inv_spr[i] = "";
-}
+
 
 init_image_trail(12, 1);
+globalvar disable_tractor;
+disable_tractor = 0;
+
+_txt[0] = "GLIP GLOP!";
+_txt[1] = "WUBBA LUBBA DUB DUB";
+txt_amt = 1;
+txt_show = 0;
+txt_time = 60;
+txt_timer = txt_time;
+txt_fly = 0;
+txt = irandom(_txt[txt_amt]);

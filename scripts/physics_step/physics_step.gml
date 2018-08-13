@@ -1,4 +1,5 @@
 
+if !(pause) {
 repeat(abs(xSpd)) {
 	var x_next = x + sign(xSpd);
 	if (x_next > 0 && x_next < room_width) {
@@ -54,6 +55,10 @@ if (beam_up) {
 			inv[inv_total] = obj_type;
 			inv_spr[inv_total] = sprite_index;
 			inv_total += 1;
+			if (inv_total = inv_max) {
+				obj_ufo.txt_show = 1;
+			}
+			control.new_pickup = 1;
 			sfx_play(snd_ufo_beam_captured);
 			instance_destroy();
 		}
@@ -110,13 +115,15 @@ repeat(abs(ySpd)) {
 		break;
 	}
 }
+xSpd = median(-xSpd_max, xSpd - (sign(xSpd) * xSpd_dec), xSpd_max);
+}
 beam_up = 0;
 draw_angle = (50 * tilt * draw_angle_change * sin(control.flow / 10));
-xSpd = median(-xSpd_max, xSpd - (sign(xSpd) * xSpd_dec), xSpd_max);
 
 if (txt_show) {
 	txt_fly = median(0, txt_fly + 0.1, 1);
-	if (point_distance(x, y, obj_ufo.x, obj_ufo.y) < 30) {
+	var _pd = point_distance(x, y, obj_ufo.x, obj_ufo.y);
+	if (_pd < 30 || _pd > 220) {
 		txt_show = 0;
 	} else
 	if (txt_timer > 0) {

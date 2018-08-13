@@ -7,10 +7,12 @@ if (pause) {
 		audio_stop_sound(snd_ufo_beam_capturing);
 	}
 } else {
-	xd = (keyboard_check(vk_right) - keyboard_check(vk_left));
-	yd = (keyboard_check(vk_down) - keyboard_check(vk_up));
-
-	if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(vk_left)) {
+	if (control.dock = 0) {
+		xd = (keyboard_check(key_right) - keyboard_check(key_left));
+		yd = (keyboard_check(key_down) - keyboard_check(key_up));
+	}
+/*
+	if (keyboard_check_pressed(key_right) || keyboard_check_pressed(key_left)) {
 		if (dash = 1 && xd = dash_dir) {
 			dash_spd = (xSpd_max);
 			xSpd = xSpd_acc * dash_dir;
@@ -21,6 +23,15 @@ if (pause) {
 			dash = 1;
 			dash_dir = xd;
 			dash_timer = 20;
+		}
+	}
+*/
+	if (keyboard_check_pressed(key_dash) && !(disable_tractor)) {
+		if (dash_timer = 0 && dash = 0) {
+			dash_spd = (xSpd_max);
+			xSpd = xSpd_acc * dash_dir;
+			dash_timer = 60;
+			dash = 1;
 		}
 	}
 	if (dash_timer > 0) {
@@ -35,6 +46,7 @@ if (pause) {
 			move_snd = 1;
 		}
 		turn = xd;
+		dash_dir = xd;
 		xSpd = median(-xSpd_max - dash_spd, xSpd + (xSpd_acc * xd), xSpd_max + dash_spd);
 	} else if (abs(xSpd) > xSpd_dec) {
 		xSpd -= sign(xSpd) * xSpd_dec;
@@ -125,7 +137,7 @@ if (pause) {
 		}
 	}
 
-	if (keyboard_check(vk_space)) {
+	if (keyboard_check(key_tractor) && !(disable_tractor)) {
 		if (tractor_beam = 0) {
 			flash = 1;
 			flash_col = c_pickup;
@@ -134,7 +146,8 @@ if (pause) {
 		}
 		tractor_beam = 1;
 		if !(audio_is_playing(snd_ufo_beam_loop)) {
-			audio_play_sound(snd_ufo_beam_loop, 10, 1);
+			sfx_play(snd_ufo_beam_loop, 1);
+			//audio_play_sound(snd_ufo_beam_loop, 10, 1);
 		}
 	} else {
 		if (tractor_beam) {
@@ -144,20 +157,36 @@ if (pause) {
 		}
 		current_beamer = 0;
 		audio_stop_sound(snd_ufo_beam_capturing);
-		if (keyboard_check_pressed(ord("D")) && inv_total > 0) {
-			flash = 1;
-			flash_col = c_drop;
-			sfx_play(snd_ufo_beam_release);
-			switch(inv[inv_total - 1]) {
-				case "cow":
-					instance_create_depth(x, y, -100, obj_space_cow);
-					break;
-				case "gameboy":
-					instance_create_depth(x, y, -100, obj_gameboy);
-					break;
+		if (keyboard_check_pressed(key_drop) && inv_total - inv_drop > 0 && !disable_tractor) {
+			scr_inv_drop();
+		}
+	}
+	
+	if (inv_total > inv_max) {
+		repeat(inv_total - inv_max) {
+			scr_inv_drop(1);
+		}
+		inv_total = inv_max;
+	}
+	inv_max = median(3, inv_max + (keyboard_check_pressed(ord("Y")) - keyboard_check_pressed(ord("T"))), inv_max_upgrade);
+
+	if (inv_drop > 0) {
+		repeat(inv_drop) {
+			if (inv_drop > 1) {
+				inv_drop -= 1;
+				inv[inv_total - 1] = "";
+				inv_total -= 1;
+				inv_drop_timer = 1;
+			} else {
+				if (inv_drop_timer > 0) {
+					inv_drop_timer -= 0.1;
+				} else {
+				inv_drop -= 1;
+				inv[inv_total - 1] = "";
+				inv_total -= 1;
+				inv_drop_timer = 1;
+				}
 			}
-			inv[inv_total - 1] = "";
-			inv_total -= 1;
 		}
 	}
 
@@ -172,10 +201,10 @@ if (pause) {
 					beam_up = 1;
 					if (point_distance(x, y, obj_ufo.x, obj_ufo.y) < 150) {
 						current_beamer = id;
+						txt_show = 1;
 						switch(obj_type) {
 							case "cow":
 								sfx_play(snd_cow_moo);
-								txt_show = 1;
 								break;
 						}
 					}
@@ -187,7 +216,8 @@ if (pause) {
 					xSpd = obj_ufo.xSpd + median(-1, (obj_ufo.x - x) / 8, 1);
 				}
 				if !(audio_is_playing(snd_ufo_beam_loop)) {
-					audio_play_sound(snd_ufo_beam_capturing, 10, 1);
+					//sfx_play(snd_ufo_beam_cap, 1);
+					//audio_play_sound(snd_ufo_beam_capturing, 10, 1);
 				}
 				if (point_distance(x, y, obj_ufo.x, obj_ufo.y) > 150) || !(collision_rectangle(x + lengthdir_x(10 * beam, draw_angle) + median(0, draw_angle * 3, xSpd_max * 6), y + lengthdir_y(10 * beam, draw_angle),
 				x - lengthdir_x(10 * beam, draw_angle) + median(-xSpd_max * 6, draw_angle * 3, 0), y + 150, current_beamer, true, true)) {
@@ -207,10 +237,25 @@ if (pause) {
 	if (flash > 0) {
 		flash -= 0.1;
 	}
-	if (move_snd) {
+	if (move_snd && control.dock = 0) {
 		sfx_play(snd_ufo_ship_move);
 		move_snd = 0;
 	}
 
 	image_trail(x + lengthdir_x(8, draw_angle - 90), y + lengthdir_y(8, draw_angle - 90), draw_angle - 90 + (xSpd * 5) - (ySpd * 5));
+}
+
+if (txt_show) {
+	txt_fly = median(0, txt_fly + 0.1, 1);
+	if (txt_timer > 0) {
+		txt_timer -= 1;
+	} else {
+		txt_show = 0;
+	}
+} else {
+	txt_timer = txt_time;
+	txt_fly = median(0, txt_fly - 0.1, 1);
+	if (txt_fly = 0) {
+		txt = _txt[irandom(txt_amt)];
+	}
 }
