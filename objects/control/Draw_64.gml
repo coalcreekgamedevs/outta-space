@@ -1,18 +1,85 @@
 		
+		
+if (dock_fly[0] > 0) {
+	var _fly_anim = 200 - (200 * dock_fly[0]),
+	    _fly_animb = 200 - (200 * dock_fly[1]);
+	
+	draw_sprite_ext(spr_monitor, 0 + (dock_ui_menu = 2), 83 - 20 - _fly_anim, 139 - 20 + (5 * sin(flow / 15)), 1, 1, (3 * sin(flow / 15)), c_white, 1);
+	if (dock_ui_menu < 2) {
+		draw_sprite_ext(spr_monitor, 2, 83 - 20 - _fly_anim, 139 - 20 + (5 * sin(flow / 15)), 1, 1, (3 * sin(flow / 15)) + (15 * sin(flow / 15)), c_white, 1);
+		}
+	draw_set_color(c_black);
+	draw_set_alpha(dock_fly[0]);
+	draw_roundrect(20, 200 + _fly_anim, 300, 260 + _fly_anim, false);
+	
+	draw_set_color(c_white);
+	draw_set_halign(fa_left);
+	draw_set_valign(fa_middle);
+	draw_set_font(fo_speaking);
+	
+	draw_text_transformed(40 + (2 * sin(flow / 20)), 220 + _fly_anim, "Big Boss Bothra", 0.7, 0.7, 0);
+	//draw_set_font(fo_header2);
+	draw_text_transformed(50, 235 + _fly_anim, "Oh great... You again.", 0.5, 0.5, 0);
+	
+	if (dock_fly[1] < 1) {
+		draw_set_color(c_black);
+		draw_roundrect(320 + _fly_anim, 120, 460 + _fly_anim, 260, false);
+	
+		draw_set_color(c_white);
+		draw_roundrect(330 + _fly_anim, 130 + (dock_ui_sel * 45), 450 + _fly_anim, 160 + (dock_ui_sel * 45), false);
+	
+		draw_set_font(fo_header2);
+		scr_recolor_dock_option(0);
+		draw_text(340 + _fly_anim, 145, "Leave Dock");
+		scr_recolor_dock_option(1);
+		draw_text(340 + _fly_anim, 190, "Unload Cargo");
+		scr_recolor_dock_option(2);
+		draw_text(340 + _fly_anim, 235, "Visit Shop");
+		
+	}
+	if (dock_fly[1] > 0) {
+		draw_set_color(c_white);
+		draw_roundrect(320 + _fly_animb, 120, 460 + _fly_animb, 260, false);
+	
+		draw_set_color(c_black);
+		draw_roundrect(330 + _fly_animb, 130 + (dock_ui_sel * 45), 450 + _fly_animb, 160 + (dock_ui_sel * 45), false);
+	
+		draw_set_font(fo_header2);
+		scr_recolor_dock_option(0, 1);
+		draw_text(340 + _fly_animb, 145, "Back");
+		scr_recolor_dock_option(1, 1);
+		draw_text(340 + _fly_animb, 190, "Upgrades");
+		scr_recolor_dock_option(2, 1);
+		draw_text(340 + _fly_animb, 235, "Hats");
+		
+		
+		
+		draw_set_alpha(dock_ui_sel_anim[1]);
+		
+		draw_set_color(c_white);
+		draw_set_halign(fa_center);
+		draw_text(160, 100, upgrade_title[dock_ui_hor]);
+		
+		//draw_set_alpha(dock_ui_sel_anim[2]);
+		//draw_text(160, 100 + (_fly_animb / 5), upgrade_title[dock_ui_hor]);
+	}
+}
+
 if (list > 0) {
 	var _size_back = -200,
 		_size_rest = 350 * list,
-		_left = _size_back + _size_rest,
-		_ht_down = 135,
+		_left = _size_back + _size_rest - (40 * dock_fly[0])
+		,
+		_ht_down = 135 - (40 * dock_fly[0]),
 		_margin = 20,
 		_top = -80,
-		_scale = 0.95 + (0.05 * sin(flow / 50)),
+		_scale = (0.95 - (dock_fly[0] * 0.3)) + (0.05 * sin(flow / 50)),
 		_txt_size = _scale * 0.8,
 		_dir = 5 * sin(flow / 20),
-		_line_start = lengthdir_x(-40, _dir),
-		_line_start_y = lengthdir_y(-40, _dir),
-		_check_start = lengthdir_x(-60, _dir),
-		_check_start_y = lengthdir_y(-60, _dir);
+		_line_start = lengthdir_x(-50 * _scale, _dir),
+		_line_start_y = lengthdir_y(-50 * _scale, _dir),
+		_check_start = lengthdir_x(-70 * _scale, _dir),
+		_check_start_y = lengthdir_y(-70 * _scale, _dir);
 	
 	draw_set_font(fo_tablet);
 	
@@ -24,7 +91,7 @@ if (list > 0) {
 	draw_set_alpha(1);
 	if (list_available) {
 		for(i = 0; i < list_items_total; i++) {
-			scr_render_list_item(_left, _top + (25 * i), _scale, _dir - 90, _check_start, _ht_down, _check_start_y, _txt_size, _dir, _line_start, _line_start_y, list_item_req[i], list_item_col[i])
+			scr_render_list_item(_left, _top + (25 * i), _scale, _dir - 90, _check_start, _ht_down, _check_start_y, _txt_size, _dir, _line_start, _line_start_y, pickup_title[list_items_num[i]], list_items_col[i])
 			}
 		}
 }
@@ -35,11 +102,11 @@ if (dock_time > 0) {
 	draw_set_color(c_black);
 	draw_set_alpha(dock_time);
 	draw_set_font(fo_header2);
-	draw_roundrect(240 - (string_width(_ask) / 1.5), 200 + fly, 240 + (string_width(_ask) / 1.5), 220 + fly, false);
+	draw_roundrect(240 - (string_width(_ask) / 1.5), 170 + fly, 240 + (string_width(_ask) / 1.5), 190 + fly, false);
 	draw_set_color(c_white);
 	draw_set_halign(fa_center);
 	draw_set_valign(fa_middle);
-	draw_text(240, 210 + fly, _ask);
+	draw_text(240, 180 + fly, _ask);
 }
 		
 		
@@ -167,9 +234,20 @@ if (dock_time > 0) {
 
 draw_set_alpha(1);
 draw_set_color(c_white);
-draw_roundrect(457 - (inv_max * 34), 11, 500, 53, false);
+draw_roundrect(465 - (inv_max * 34), 11, 500, 53, false);
+draw_roundrect(379, 59, 500, 81, false);
 draw_set_color(c_black);
-draw_roundrect(458 - (inv_max * 34), 12, 500, 52, false);
+
+draw_roundrect(466 - (inv_max * 34), 12, 500, 52, false);
+draw_roundrect(380, 60, 500, 80, false);
+
+draw_set_halign(fa_left);
+draw_set_valign(fa_middle);
+draw_set_color(c_white);
+draw_set_font(fo_cash);
+draw_sprite_ext(spr_cash, 0, 394, 70, 1, 1, (5 * sin(flow / 25)), c_white, 1);
+draw_text_transformed(416, 72, cash_draw_amt, 0.7, 0.7, 0);
+
 for(i = 0; i < inv_max; i++) {
 	draw_sprite_ext(spr_container, 0, 456 - (i * 34), 33, 1, 1, (10 * new_pickup * cos(flow / 5)), c_white, 1);
 }

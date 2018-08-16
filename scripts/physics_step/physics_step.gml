@@ -55,8 +55,18 @@ if (beam_up) {
 			inv[inv_total] = obj_type;
 			inv_spr[inv_total] = sprite_index;
 			inv_total += 1;
+			with(control) {
+				scr_inv_check();
+			}
+			switch(obj_type) {
+				case "car":
+					obj_ufo.delay_snd = "crush";
+					obj_ufo.delay_snd_timer = 30;
+					break;
+					
+			}
 			if (inv_total = inv_max) {
-				obj_ufo.txt_show = 1;
+				obj_ufo.player_talk_timer = obj_ufo.player_talk_time;
 			}
 			control.new_pickup = 1;
 			sfx_play(snd_ufo_beam_captured);
@@ -70,22 +80,24 @@ if (beam_up) {
 	}
 } else {
 	ySpd = median(-ySpd_max, ySpd + ySpd_acc, 0);
-	fall_speed = median(0, fall_speed + world_gravity, world_velocity);
-	repeat(abs(fall_speed)) {
-		if !(place_meeting(x, y + sign(fall_speed), par_solid)) {
-			y += sign(fall_speed);
-		} else {
-			 if (fall_speed > 4) {
-					switch(obj_type) {
-						case "cow":
-							if !(audio_is_playing(snd_cow_moo_drop)) {
-								sfx_play(snd_cow_moo_drop);
-							}
-							break;
+	if (can_fall) {
+		fall_speed = median(0, fall_speed + world_gravity, world_velocity);
+		repeat(abs(fall_speed)) {
+			if !(place_meeting(x, y + sign(fall_speed), par_solid)) {
+				y += sign(fall_speed);
+			} else {
+				 if (fall_speed > 4) {
+						switch(obj_type) {
+							case "cow":
+								if !(audio_is_playing(snd_cow_moo_drop1) && !audio_is_playing(snd_cow_moo_drop2)) {
+									sfx_random(snd_cow_moo_drop1, snd_cow_moo_drop2);
+								}
+								break;
+						}
 					}
-				}
-			fall_speed = 0;
-			break;
+				fall_speed = 0;
+				break;
+			}
 		}
 	}
 	draw_angle_change = median(0, draw_angle_change - 0.1, 1);
@@ -118,7 +130,7 @@ repeat(abs(ySpd)) {
 xSpd = median(-xSpd_max, xSpd - (sign(xSpd) * xSpd_dec), xSpd_max);
 }
 beam_up = 0;
-draw_angle = (50 * tilt * draw_angle_change * sin(control.flow / 10));
+draw_angle = offset_angle + (50 * tilt * draw_angle_change * sin(control.flow / 10));
 
 if (txt_show) {
 	txt_fly = median(0, txt_fly + 0.1, 1);

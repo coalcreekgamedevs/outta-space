@@ -3,7 +3,7 @@
 depth = -100;
 
 room_speed = 60;
-instance_create_depth(x, y, 1000, control);
+//instance_create_depth(x, y, 1000, control);
 
 can_move = 0;
 image_speed = 0;
@@ -51,3 +51,8 @@ txt_time = 60;
 txt_timer = txt_time;
 txt_fly = 0;
 txt = irandom(_txt[txt_amt]);
+
+player_talk_timer = 0;
+player_talk_time = 30;
+delay_snd_timer = 0;
+delay_snd = "";

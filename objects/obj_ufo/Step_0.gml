@@ -174,17 +174,24 @@ if (pause) {
 		repeat(inv_drop) {
 			if (inv_drop > 1) {
 				inv_drop -= 1;
-				inv[inv_total - 1] = "";
-				inv_total -= 1;
+				if (inv_total > 0) {
+					inv[inv_total - 1] = "";
+					inv_total -= 1;
+				}
 				inv_drop_timer = 1;
+				scr_inv_check();
 			} else {
 				if (inv_drop_timer > 0) {
 					inv_drop_timer -= 0.1;
 				} else {
 				inv_drop -= 1;
-				inv[inv_total - 1] = "";
-				inv_total -= 1;
+				if (inv_total > 0) {
+					inv[inv_total - 1] = "";
+					inv_total -= 1;
+				}
+				//scr_inv_check();
 				inv_drop_timer = 1;
+				scr_inv_check();
 				}
 			}
 		}
@@ -202,11 +209,7 @@ if (pause) {
 					if (point_distance(x, y, obj_ufo.x, obj_ufo.y) < 150) {
 						current_beamer = id;
 						txt_show = 1;
-						switch(obj_type) {
-							case "cow":
-								sfx_play(snd_cow_moo);
-								break;
-						}
+						scr_play_obj_snd();
 					}
 				} 
 			audio_stop_sound(snd_ufo_beam_capturing);	
@@ -243,6 +246,23 @@ if (pause) {
 	}
 
 	image_trail(x + lengthdir_x(8, draw_angle - 90), y + lengthdir_y(8, draw_angle - 90), draw_angle - 90 + (xSpd * 5) - (ySpd * 5));
+	if (player_talk_timer > 0) {
+		player_talk_timer -= 1;
+		if (player_talk_timer = 1) {
+			obj_ufo.txt_show = 1;
+			sfx_random(snd_player_excited1, snd_player_excited2, snd_player_excited3);
+			}
+	}
+	if (delay_snd_timer > 0) {
+		delay_snd_timer -= 1;
+		if (delay_snd_timer = 1) {
+			switch(delay_snd) {
+				case "crush":
+					sfx_play(snd_car_crush);
+					break;
+			}
+		}
+	}
 }
 
 if (txt_show) {

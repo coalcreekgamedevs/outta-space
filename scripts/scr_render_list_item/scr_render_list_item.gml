@@ -18,7 +18,7 @@ var _x = scr_calc_tablet_line(argument[1], argument[2], argument[3], 1),
 
 draw_sprite_ext(spr_checkbox, 0, argument[0] + _x + argument[4], argument[5] + _y + argument[6], argument[7], argument[7], argument[8], c_white, 1);
 if (argument[12] = 1) {
-	draw_sprite_ext(spr_checkbox, 1, argument[0] + _x + argument[4], argument[5] + _y + argument[6], argument[7], argument[7], argument[8], c_white, 1);
+	draw_sprite_ext(spr_checkbox, 1, argument[0] + _x + argument[4], argument[5] + _y + argument[6] - 4, argument[7], argument[7], argument[8], c_white, 1);
 }
 draw_text_transformed(argument[0] + _x + argument[9], argument[5] + _y + argument[10], argument[11], argument[7], argument[7], argument[8]);
 	

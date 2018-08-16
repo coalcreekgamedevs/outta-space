@@ -28,3 +28,5 @@ txt_timer = txt_time;
 txt_fly = 0;
 depth = -100;
 txt = 0;
+can_fall = 1;
+offset_angle = 0;
